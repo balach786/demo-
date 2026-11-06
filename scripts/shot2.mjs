@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1560, height: 940 } });
+await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+await page.click('.nav-item:has-text("Ledgers")');
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'docs/qa/12-ledgers.png', fullPage: true });
+await page.click('.nav-item:has-text("Expenses & Income")');
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'docs/qa/13-expenses.png', fullPage: true });
+await page.click('.nav-item:has-text("Chart of Accounts")');
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'docs/qa/14-accounts.png', fullPage: true });
+await browser.close();

@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1560, height: 940 } });
+const errors = [];
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
+await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+await page.click('.nav-item:has-text("AI Command Center")');
+await page.waitForTimeout(600);
+await page.click('.suggestion:has-text("Prepare a payment of Rs. 25,000")');
+await page.waitForTimeout(1500);
+const convo = await page.locator('.chat-area').innerText();
+console.log('CONVO TAIL:\n', convo.split('\n').slice(-25).join('\n'));
+const ls = await page.evaluate(() => localStorage.getItem('abs-demo-state-v1'));
+console.log('\nLOCALSTORAGE approvals:', ls ? JSON.parse(ls).approvals?.map(a => [a.id, a.status, a.title]) : 'none');
+console.log('\nCONSOLE ERRORS:', errors.length ? errors : 'none');
+await browser.close();
